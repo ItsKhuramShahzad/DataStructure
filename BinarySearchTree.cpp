@@ -1,3 +1,5 @@
+// Binary Search Tree Implementation..  
+// @KS.
 #include<iostream>
 using namespace std;
 
@@ -23,7 +25,7 @@ class BinarySearchTree{
 	Node* inOrderTraversal( Node* root);
 	Node* preOrderTraversal( Node* root);
 	Node* postOrderTraversal( Node* root);
-	Node* FindMax( Node* root);
+	Node* FindMax(Node* r);
 };
 
 int main (){
@@ -35,8 +37,9 @@ int main (){
 	tree.insert(tree.root, 3 );
 	tree.insert(tree.root, 9 );
 	tree.insert(tree.root, 5 );
-	tree.DeleteNodeInBST(tree.root, 7);
-	tree.DeleteNodeInBST(tree.root, 8);
+	
+	tree.DeleteNodeInBST(tree.root ,9);
+ 
 	
 	cout<<"In Order Print (left--Root--Right)"<<endl;
 	tree.inOrderTraversal(tree.root);
@@ -48,7 +51,10 @@ int main (){
 	
 	cout<<"\n-----------------------"<<endl;
 	cout<<"Post Order Print (left--Right--Root)"<<endl;
-		tree.postOrderTraversal(tree.root);
+
+	tree.postOrderTraversal(tree.root);
+	
+	
 	return 0;
 }
 
@@ -74,18 +80,19 @@ Node* BinarySearchTree::insert(Node* r, int val ){
 		
 		return r;
 	}
-	else if (r->data== val){
-		cout<<"Duplicate Record  "<<val;
-			return r;
-	}
-	else if (r->data < val)
+//	else if (r->data== val){
+//		//cout<<"Duplicate Record  "<<val;
+//			return r;
+//	}
+	else if (val < r->data)
 		r->left = insert(r->left , val );
 	
-	else if (r->data> val)
+	else if (val > r->data)
 		r->right= insert( r->right,val);
 
 }
-Node * BinarySearchTree::DeleteNodeInBST(Node* root, int data){
+Node * BinarySearchTree::DeleteNodeInBST(Node* root, int data)
+{
 	
 	if(root==NULL)
 	 return root;
@@ -100,14 +107,16 @@ Node * BinarySearchTree::DeleteNodeInBST(Node* root, int data){
         {
             delete root;
             root = NULL;   
+            return root;
         }
-        //One child 
+        //One child on left
         else if(root->right == NULL)
         {
             Node* temp = root;
             root= root->left;
             delete temp;
         }
+        //One child on right
         else if(root->left == NULL)
         {
             Node* temp = root;
@@ -124,6 +133,7 @@ Node * BinarySearchTree::DeleteNodeInBST(Node* root, int data){
     }
     return root;
 }
+
 
 Node * BinarySearchTree::inOrderTraversal( Node* r){
 	 if (r == NULL)
@@ -152,4 +162,3 @@ Node* BinarySearchTree::postOrderTraversal( Node* r){
     postOrderTraversal(r->right);	
     cout << " "<< r->data << " -> ";
 }
-
