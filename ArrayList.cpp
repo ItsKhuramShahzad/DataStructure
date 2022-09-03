@@ -1,3 +1,4 @@
+//ArrayList Using Ponters. @KS
 #include<iostream>
 using namespace std;
 #define SIZE  10
