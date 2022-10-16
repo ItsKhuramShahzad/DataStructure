@@ -97,19 +97,16 @@ Node* BinarySearchTree::insert(Node* r, int val ){
 		root= r=t;
 		else
 		r=t;
-		
-		return r;
 	}
-//	else if (r->data== val){
-//		//cout<<"Duplicate Record  "<<val;
-//			return r;
-//	}
+	else if (r->data== val){
+	cout<<"Duplicate Record  "<<val;
+	}
 	else if (val < r->data)
 		r->left = insert(r->left , val );
 	
 	else if (val > r->data)
 		r->right= insert( r->right,val);
-
+return r;
 }
 Node * BinarySearchTree::DeleteNodeInBST(Node* root, int data)
 {
