@@ -1,126 +1,146 @@
-/* AVL Tree Implementation in C++   */
-/* @KS                         */
-
+// AVL Tree Implementation..  
 #include<iostream>
 using namespace std;
-
-	class  node
-    {
-    	public:
-        int data;
-        node* left;
-        node* right;
-        int height;
-        
-		node (int data){
-        	this->data= data;
-        	left= right= NULL;
-        	height =0;
-        	
+	class node {
+	public:
+	int data;
+	node* left, *right;
+    int height;
+	node(int data){
+		this->data=  data;
+		left= right= NULL;
+		height=0;
 		}
-    };
-    
-    
-class AVLTree
-{
-	//private:
-
-    
-    node* root;
-    void makeEmpty(node* t);
-    node* insert(int x, node* t);
-
-	// Rotation
+	};	
+class AVLTree{
+	private: 
+    //private data member and methods
+	node* root;
+	node* Insert( node* root, int val);
+	node* Delete(node* root,int data);
+	node* PreOrderTraversal( node* root);
+	node* FindMax(node* root);
+		// Rotation
     node* singleRightRotate(node* &t);
     node* singleLeftRotate(node* &t);
     node* doubleRightLeftRotate(node* &t);
     node* doubleLeftRightRotate(node* &t);
-    
-    
-    node* findMin(node* t);
-    node* findMax(node* t);
-    node* remove(int x, node* t);
-    int height(node* t);
     int getBalance(node* t);
-    void inorder(node* t);
-
-public:
-    AVLTree()
+	public:
+	AVLTree(){
+		root= NULL;
+	}
+	void	Insert(int val){
+   	root= Insert(this->root,  val);
+   }
+   
+	void	Delete(int val){
+    root = Delete(this->root, val);
+   }
+    void PreOrderTraversal(){
+        PreOrderTraversal( this->root);
+	}
+	 int height(node* t)
     {
-        root = NULL;
+        return (t == NULL ? -1 : t->height);
     }
-
-    void insert(int x)
+     
+	int length(node* r){
+    	int  lh=0,rh=0;
+    	if(r==NULL)
+		 return -1;
+    	if(r->left!=NULL){
+    		lh++;
+    		lh+=length(r->left);
+		}
+		if(r->right!=NULL){
+    		rh++;
+    		rh+=length(r->right);
+		}
+		if(rh>lh) return rh;
+		else return lh;
+	}
+	
+	int treeHeight(node *t)
+	{
+	int static l_height=0;
+	int static r_height=0;
+    if (t == NULL)
+        return -1;
+    else
     {
-        root = insert(x, root);
+    l_height = treeHeight(t->left);
+       r_height = treeHeight(t->right);
+        if (l_height > r_height)
+            return (l_height + 1);
+        else
+            return (r_height + 1);
     }
-
-    void remove(int x)
-    {
-        root = remove(x, root);
-    }
-
-    void display()
-    {
-        inorder(root);
-        cout << endl;
-    }
+	}
 };
-
-int main()
-{
-    AVLTree tree;
-  	tree.insert(3);
-  	tree.insert(5);
-  	tree.insert(6);
-  	tree.insert(7);
-  
-    tree.display();
+int main (){
+	AVLTree tree1, tree2;
+  	tree1.Insert(30);
+    tree1.Insert(20);
+    tree1.Insert(40);
+    tree1.Insert(15);
+    tree1.Delete(40);
+	cout<<"Pre Order Print (Root--left--Right)"<<endl;
+	tree1.PreOrderTraversal();	
+	return 0;
 }
-
-void AVLTree::makeEmpty(node* t) {
-        if(t == NULL)
-            return;
-        makeEmpty(t->left);
-        makeEmpty(t->right);
-        delete t;
-    }
-    
-node*  AVLTree::  insert(int x, node* t)
-    {
-        if(t == NULL)
-        {
-            t = new node (x);
-        }
-        else if(x < t->data)
-        {
-            t->left = insert(x, t->left);
-            if(height(t->left) - height(t->right) == 2)
+node* AVLTree::Insert(node* t, int val ){
+ if (t==NULL)
+	{
+		 t= new node(val);
+	}
+	else if (t->data== val){
+		cout<<"Record already exist"<<val<<endl;
+	}
+	else if (val < t->data) // insert on left s
+	{
+		t->left = Insert(t->left , val );
+		 int bf= height(t->left) - height(t->right);
+			if(bf == 2)
             {
-                if(x < t->left->data)
+                if(val < t->left->data)
                     t = singleRightRotate(t);
                 else
                     t = doubleLeftRightRotate(t);
             }
-        }
-        else if(x > t->data)
-        {
-            t->right = insert(x, t->right);
-            
-            if(height(t->right) - height(t->left) == 2)
+	}
+	else if (val > t->data) // Right side
+		{
+		t->right= Insert( t->right,val);
+		
+		int bf=height(t->right) - height(t->left);
+		   
+		    if(bf == 2)
             {
-                if(x > t->right->data)
+                if(val > t->right->data)
                     t = singleLeftRotate(t);
                 else
                     t = doubleRightLeftRotate(t);
             }
-        }
+	}
+	t->height = max(height(t->left), height(t->right))+1;
+	return t;
+}
 
-        t->height = max(height(t->left), height(t->right))+1;
-        return t;
+node* AVLTree::doubleRightLeftRotate(node* &t)
+    {
+        t->right = singleRightRotate(t->right);
+        return singleLeftRotate(t);
     }
     
-     node* AVLTree::singleRightRotate(node* &t)
+    
+node* AVLTree::doubleLeftRightRotate(node* &t)
+    {
+        t->left = singleLeftRotate(t->left);
+        return singleRightRotate(t);
+    }
+    
+node* AVLTree::singleRightRotate(node* &t)
     {
         node* u = t->left;
         t->left = u->right;
@@ -129,8 +149,7 @@ node*  AVLTree::  insert(int x, node* t)
         u->height = max(height(u->left), t->height)+1;
         return u;
     }
-
-    node* AVLTree::singleLeftRotate(node* &t)
+node* AVLTree::singleLeftRotate(node* &t)
     {
         node* u = t->right;
         t->right = u->left;
@@ -139,129 +158,82 @@ node*  AVLTree::  insert(int x, node* t)
         u->height = max(height(u->right), t->height)+1 ;
         return u;
     }
-
-    node* AVLTree::doubleRightLeftRotate(node* &t)
+    
+node * AVLTree::Delete(node* r, int data)
+{
+//	node * r= root1;
+	if(r==NULL)
+	 return r;
+    else if(data < r->data) 
+        r->left = Delete(r->left, data);
+    else if (data> r->data)
+        r->right = Delete(r->right, data);
+    else
     {
-        t->right = singleRightRotate(t->right);
-        return singleLeftRotate(t);
-    }
-
-    node* AVLTree::doubleLeftRightRotate(node* &t)
-    {
-        t->left = singleLeftRotate(t->left);
-        return singleRightRotate(t);
-    }
-   
-    node* AVLTree::findMin(node* t)
-    {
-        if(t == NULL)
-            return NULL;
-        else if(t->left == NULL)
-            return t;
-        else
-            return findMin(t->left);
-    }
-    node* AVLTree::findMax(node* t)
-    {
-        if(t == NULL)
-            return NULL;
-        else if(t->right == NULL)
-            return t;
-        else
-            return findMax(t->right);
-    }
-
-    node* AVLTree::remove(int x, node* t)
-    {
-        node* temp;
-
-        // Element not found
-        if(t == NULL)
-            return NULL;
-
-        // Searching for element
-        else if(x < t->data)
-            t->left = remove(x, t->left);
-        else if(x > t->data)
-            t->right = remove(x, t->right);
-
-        // Element found
-        // With 2 children
-        else if(t->left && t->right)
+        //No child
+        if(r->right == NULL && r->left == NULL)
         {
-            temp = findMin(t->right);
-            t->data = temp->data;
-            t->right = remove(t->data, t->right);
+            delete r;
+            r = NULL;   
+            return r;
         }
-        // With one or zero child
-        else
+        //One child on left
+        else if(r->right == NULL)
         {
-            temp = t;
-            if(t->left == NULL)
-                t = t->right;
-            else if(t->right == NULL)
-                t = t->left;
+            node* temp = r;
+            r= r->left;
             delete temp;
         }
-        if(t == NULL)
-            return t;
-
-        t->height = max(height(t->left), height(t->right))+1;
-
-        // If node is unbalanced
-        // If left node is deleted, right case
-        if(height(t->left) - height(t->right) == 2)
+        //One child on right
+        else if(r->left == NULL)
         {
-            // right right case
-            if(height(t->left->left) - height(t->left->right) == 1)
-                return singleLeftRotate(t);
-            // right left case
-            else
-                return doubleRightLeftRotate(t);
+            node* temp = r;
+            r= r->right;
+            delete temp;
         }
-        // If right node is deleted, left case
-        else if(height(t->right) - height(t->left) == 2)
-        {
-            // left left case
-            if(height(t->right->right) - height(t->right->left) == 1)
-                return singleRightRotate(t);
-            // left right case
-            else
-                return doubleLeftRightRotate(t);
-        }
-        return t;
-    }
-
-    int AVLTree::height(node* t)
-    {
-        return ( t == NULL ? -1 : t->height);
-    }
-
-    int AVLTree::getBalance(node* t)
-    {
-        if(t == NULL)
-            return 0;
+        //two child
         else
-            return height(t->left) - height(t->right);
+        {
+            node* temp = FindMax(r->right);
+            int x= r->data;  //
+            r->data = temp->data;
+            temp->data= x;
+            r->left = Delete(r->left, temp->data);
+        }
     }
-    void AVLTree::inorder(node* t)
-    {
-    	
-        if(t == NULL)
-            return;
-     
-        inorder(t->left);  
-        inorder(t->right);
-        cout << t->data << " -> ";
-        
-    }
-    
-//	void AVLTree::preorder(node* t)
-//    {
-//        if(t == NULL)
-//            return;
-//        cout << t->data << " -> ";
-//        inorder(t->left);
-//        inorder(t->right);
-//    }
+     if(r == NULL)
+            return r;
 
+        r->height = max(height(r->left), height(r->right))+1;
+        int bal = height(r->left) - height(r->right);
+            if(bal>1){
+                if(height(r->left) >= height(r->right)){
+                    return singleRightRotate(r);
+                }else{
+                    r->left = singleLeftRotate(r->left);
+                    return singleRightRotate(r);
+                }
+            }else if(bal < -1){
+                if(height(r->right) >= height(r->left)){
+                    return singleLeftRotate(r);
+                }else{
+                    r->right = singleRightRotate(r->right);
+                    return singleLeftRotate(r);
+                }
+            }
+      
+        return r;
+}
+node* AVLTree::FindMax(node* r){	
+	while(r->right!=NULL){
+		r= r->right;
+	}
+	return r;	
+}
+node* AVLTree::PreOrderTraversal( node* r){
+	 if (r == NULL)
+        return NULL;
+    cout << " "<< r->data << " -> ";
+    PreOrderTraversal(r->left);
+    PreOrderTraversal(r->right);	
+}
