@@ -4,7 +4,7 @@ using namespace std;
 	class node {
 	public:
 	int data;
-	node* left, *right;
+	node* left; node *right;
     int height;
 	node(int data){
 		this->data=  data;
@@ -15,11 +15,21 @@ using namespace std;
 class AVLTree{
 	private: 
     //private data member and methods
+
 	node* root;
+	int TotalNodes(node * r){
+		int static x=0;
+	 if (r == NULL)
+        return x;
+    x++;
+    TotalNodes(r->left);
+    TotalNodes(r->right);	
+	}
+
 	node* Insert( node* root, int val);
 	node* Delete(node* root,int data);
 	node* PreOrderTraversal( node* root);
-	node* FindMax(node* root);
+	node* FindMin(node* root);
 		// Rotation
     node* singleRightRotate(node* &t);
     node* singleLeftRotate(node* &t);
@@ -32,9 +42,9 @@ class AVLTree{
 	}
 	void	Insert(int val){
    	root= Insert(this->root,  val);
-   }
-   
-	void	Delete(int val){
+   }	
+
+void Delete(int val){
     root = Delete(this->root, val);
    }
     void PreOrderTraversal(){
@@ -77,16 +87,32 @@ class AVLTree{
             return (r_height + 1);
     }
 	}
+	int TotalNodes(){
+		return TotalNodes(this->root);
+}
+
+	
 };
 int main (){
 	AVLTree tree1, tree2;
-  	tree1.Insert(30);
-    tree1.Insert(20);
-    tree1.Insert(40);
+  	tree1.Insert(8);
+    tree1.Insert(5);
+    tree1.Insert(10);
+    tree1.Insert(4);
+    tree1.Insert(9);
     tree1.Insert(15);
-    tree1.Delete(40);
+    tree1.Insert(7);
+//    tree1.InsertIntoBST(6);
+//    tree1.InsertIntoBST(7);
+//    
+//    tree1.InsertIntoBST(8);
+//    tree1.InsertIntoBST(9);
+//    tree1.InsertIntoBST(10);
+
+    tree1.Delete(8);
 	cout<<"Pre Order Print (Root--left--Right)"<<endl;
 	tree1.PreOrderTraversal();	
+
 	return 0;
 }
 node* AVLTree::Insert(node* t, int val ){
@@ -194,11 +220,9 @@ node * AVLTree::Delete(node* r, int data)
         //two child
         else
         {
-            node* temp = FindMax(r->right);
-            int x= r->data;  //
+            node* temp = FindMin(r->right);
             r->data = temp->data;
-            temp->data= x;
-            r->left = Delete(r->left, temp->data);
+            r->right = Delete(r->right, temp->data);
         }
     }
      if(r == NULL)
@@ -221,12 +245,11 @@ node * AVLTree::Delete(node* r, int data)
                     return singleLeftRotate(r);
                 }
             }
-      
         return r;
 }
-node* AVLTree::FindMax(node* r){	
-	while(r->right!=NULL){
-		r= r->right;
+node* AVLTree::FindMin(node* r){	
+	while(r->left!=NULL){
+		r= r->left;
 	}
 	return r;	
 }
@@ -236,4 +259,4 @@ node* AVLTree::PreOrderTraversal( node* r){
     cout << " "<< r->data << " -> ";
     PreOrderTraversal(r->left);
     PreOrderTraversal(r->right);	
-}
+}  
